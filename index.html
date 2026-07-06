@@ -64,7 +64,21 @@
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = bgImage.src;
-        img.onload = () => { sceneryImage = img; resolve(); };
+        // 找到这行： img.onload = () => { ... 
+// 修改为下面这样：
+img.onload = () => {
+  userImage = img;
+  mergeBtn.disabled = false;
+  canvasContainer.style.display = 'none';
+  downloadBtn.disabled = true;
+  // 🟢 给用户一个视觉反馈，告诉用户图片已经成功加载进来了
+  document.querySelector('.upload-btn').textContent = '✅ 已选择照片';
+};
+// 🔴 关键！增加加载失败的回调，告诉用户哪里出错了
+img.onerror = () => {
+  alert('❌ 图片解析失败！请确认您上传的是 jpg 或 png 格式，且未损坏。');
+  loadingDiv.style.display = 'none';
+};
         img.onerror = () => reject(new Error('景区图片加载失败，请确认仓库中有 scenery.jpg'));
       });
     }
